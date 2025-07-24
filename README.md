@@ -31,3 +31,18 @@ Add single-player mode (vs AI)
 Add animations (for GUI versions)
 Inprove the UI
 
+**User Guide**
+install the apk (for the direct game)
+
+For files
+install Android studio
+open the project as the empty viwes activity and name the apk name as TicTacToe
+select the language as the java click create project
+paste the mainactivity java script on the java file
+place the music files in the app\build\intermediates\packaged_res\debug\packageDebugResources\raw\ folder
+place the html code in the assests folder uder the res
+place the androidmainfest xml code and activitymain xml codes
+
+Make your phone in the Developer mode
+connect through usb by enabling the usb debugging options
+run the code the apk automatically install on your mobile

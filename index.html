@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 10px;
+            background: linear-gradient(135deg, #45a049, #4CAF50, #81c784);
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #fff;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+        }
+
+        #player-turn {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+        }
+
+        /* Scoreboard styles */
+        .scoreboard {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .score-item {
+            text-align: center;
+        }
+
+        .score-item h3 {
+            margin: 0 0 5px 0;
+            font-size: 1rem;
+        }
+
+        .score {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        /* Home Screen */
+        #home-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Game Container */
+        #game-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Board Styles */
+        .board {
+            display: grid;
+            gap: 4px;
+            margin-bottom: 20px;
+            background-color: #333;
+            padding: 4px;
+            border-radius: 5px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .cell {
+            aspect-ratio: 1/1;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .cell:hover {
+            background-color: #f0f0f0;
+        }
+
+        .cell.win {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        /* Button Styles */
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            background-color: #45a049;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        button:hover {
+            background-color: #2e7d32;
+        }
+
+        /* Popup Styles */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .popup-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 400px;
+        }
+
+        #winner-message {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        /* Enhanced Settings Panel Styles */
+        #settings-panel {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 100;
+        }
+
+        .settings-icon {
+            background-color: rgba(255, 255, 255, 0.9);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+            font-size: 22px;
+            color: #2e7d32;
+            transition: all 0.3s ease;
+        }
+
+        .settings-icon:hover {
+            transform: rotate(30deg);
+            background-color: #fff;
+        }
+
+        .settings-content {
+            display: none;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            width: 200px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .settings-title {
+            font-weight: bold;
+            color: #2e7d32;
+            margin-bottom: 15px;
+            font-size: 16px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 8px;
+        }
+
+        .settings-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        /* Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #4CAF50;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .settings-item label {
+            margin-left: 15px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 600px) {
+            .cell {
+                font-size: 6vw;
+            }
+
+            .score-item h3 {
+                font-size: 0.8rem;
+            }
+
+            .button-container {
+                flex-direction: column;
+                width: 100%;
+                max-width: 200px;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Settings Panel -->
+<div id="settings-panel">
+    <div class="settings-icon" id="settings-toggle">
+        <i class="fas fa-cog"></i>
+    </div>
+    <div class="settings-content" id="settings-content">
+        <div class="settings-title">Game Settings</div>
+        <div class="settings-item">
+            <label class="switch">
+                <input type="checkbox" id="music-toggle" checked>
+                <span class="slider"></span>
+            </label>
+            <label for="music-toggle">Music</label>
+        </div>
+    </div>
+</div>
+<div id="home-screen">
+    <h1>Tic Tac Toe</h1>
+    <h2>Select Board Size</h2>
+    <div class="button-container">
+        <button onclick="startGame(3)">3x3</button>
+        <button onclick="startGame(5)">5x5</button>
+    </div>
+</div>
+<div id="game-container">
+    <h1>Tic Tac Toe</h1>
+    <div class="scoreboard">
+        <div class="score-item">
+            <h3>Player 1 (X)</h3>
+            <div id="player1-score" class="score">0</div>
+        </div>
+        <div class="score-item">
+            <h3>Ties</h3>
+            <div id="ties-score" class="score">0</div>
+        </div>
+        <div class="score-item">
+            <h3>Player 2 (O)</h3>
+            <div id="player2-score" class="score">0</div>
+        </div>
+    </div>
+    <div id="player-turn">Player 1's Turn</div>
+    <div id="board" class="board"></div>
+    <div class="button-container">
+        <button onclick="resetGame()">New Game</button>
+        <button onclick="resetScores()">Reset Scores</button>
+        <button onclick="showHomeScreen()">Change Board Size</button>
+    </div>
+    <div id="winner-popup" class="popup">
+        <div class="popup-content">
+            <p id="winner-message"></p>
+            <div class="button-container" style="text-align: center;">
+                <button onclick="nextGame()">Next Game</button>
+                <button onclick="showHomeScreen()">Change Board Size</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    let boardSize = 3; // Default to 3x3
+    let board = [];
+    let currentPlayer = "X";
+    let gameActive = true;
+    let musicEnabled = true;
+    let winningCells = []; // Store the winning cells to highlight them when showing game state
+
+    // Scoreboard
+    let scores = {
+        player1: 0,
+        player2: 0,
+        ties: 0
+    };
+
+    // Check if running in Android WebView with JavaScript interface
+    const isAndroid = typeof Android !== 'undefined';
+
+    // Initialize settings panel
+    document.getElementById("settings-toggle").addEventListener("click", toggleSettings);
+    document.getElementById("music-toggle").addEventListener("change", toggleMusic);
+
+    // Add click event for closing popup when clicking outside
+    document.getElementById("winner-popup").addEventListener("click", function(event) {
+        // If clicked on the background (not on the popup content)
+        if (event.target === this) {
+            showGameState(); // Show how the player won before starting next game
+        }
+    });
+
+    // Function to toggle settings panel
+    function toggleSettings() {
+        const settingsContent = document.getElementById("settings-content");
+        if (settingsContent.style.display === "block") {
+            settingsContent.style.display = "none";
+        } else {
+            settingsContent.style.display = "block";
+        }
+    }
+
+    // Function to toggle music setting
+    function toggleMusic() {
+        musicEnabled = document.getElementById("music-toggle").checked;
+
+        // If we're in Android WebView, save the music preference to Android
+        if (isAndroid) {
+            // Call a new method we'll add to our WebAppInterface
+            Android.setMusicEnabled(musicEnabled);
+        }
+    }
+
+    // Generate winning combinations dynamically based on board size
+    function generateWinningCombinations(size) {
+        const combinations = [];
+
+        // Rows
+        for (let row = 0; row < size; row++) {
+            const rowCombination = [];
+            for (let col = 0; col < size; col++) {
+                rowCombination.push(row * size + col);
+            }
+            combinations.push(rowCombination);
+        }
+
+        // Columns
+        for (let col = 0; col < size; col++) {
+            const colCombination = [];
+            for (let row = 0; row < size; row++) {
+                colCombination.push(row * size + col);
+            }
+            combinations.push(colCombination);
+        }
+
+        // Main diagonal (top-left to bottom-right)
+        const mainDiagonal = [];
+        for (let i = 0; i < size; i++) {
+            mainDiagonal.push(i * size + i);
+        }
+        combinations.push(mainDiagonal);
+
+        // Other diagonal (top-right to bottom-left)
+        const otherDiagonal = [];
+        for (let i = 0; i < size; i++) {
+            otherDiagonal.push(i * size + (size - 1 - i));
+        }
+        combinations.push(otherDiagonal);
+
+        return combinations;
+    }
+
+    // Show the board selection screen
+    function showHomeScreen() {
+        document.getElementById("home-screen").style.display = "flex";
+        document.getElementById("game-container").style.display = "none";
+        document.getElementById("winner-popup").style.display = "none";
+    }
+
+    // Start the game with selected board size
+    function startGame(size) {
+        boardSize = size;
+        board = new Array(size * size).fill("");
+        gameActive = true;
+        currentPlayer = "X";
+        winningCells = []; // Reset winning cells
+
+        // Update player turn display
+        document.getElementById("player-turn").innerText = `Player 1's Turn`;
+
+        document.getElementById("home-screen").style.display = "none";
+        document.getElementById("game-container").style.display = "flex";
+        document.getElementById("winner-popup").style.display = "none";
+
+        generateBoard();
+        updateScoreboard();
+    }
+
+    // Update the scoreboard display
+    function updateScoreboard() {
+        document.getElementById("player1-score").innerText = scores.player1;
+        document.getElementById("player2-score").innerText = scores.player2;
+        document.getElementById("ties-score").innerText = scores.ties;
+    }
+
+    // Reset scores to zero
+    function resetScores() {
+        scores = {
+            player1: 0,
+            player2: 0,
+            ties: 0
+        };
+        updateScoreboard();
+    }
+
+    // Generate the Tic-Tac-Toe board dynamically
+    function generateBoard() {
+        const boardElement = document.getElementById("board");
+        boardElement.innerHTML = ""; // Clear old board
+
+        boardElement.style.gridTemplateColumns = `repeat(${boardSize}, 1fr)`;
+        boardElement.style.gridTemplateRows = `repeat(${boardSize}, 1fr)`;
+
+        for (let i = 0; i < boardSize * boardSize; i++) {
+            const cell = document.createElement("div");
+            cell.classList.add("cell");
+            cell.setAttribute("data-index", i);
+            cell.addEventListener("click", () => makeMove(i));
+            boardElement.appendChild(cell);
+        }
+    }
+
+    // Handle user moves
+    function makeMove(index) {
+        if (board[index] === "" && gameActive) {
+            board[index] = currentPlayer;
+            document.querySelector(`.cell[data-index="${index}"]`).innerText = currentPlayer;
+
+            if (checkWinner()) {
+                gameActive = false;
+                // Update scores
+                if (currentPlayer === "X") {
+                    scores.player1++;
+                } else {
+                    scores.player2++;
+                }
+                updateScoreboard();
+                showWinner(currentPlayer);
+                return;
+            }
+
+            // Check for draw
+            if (board.every(cell => cell !== "")) {
+                gameActive = false;
+                scores.ties++;
+                updateScoreboard();
+                showDraw();
+                return;
+            }
+
+            currentPlayer = currentPlayer === "X" ? "O" : "X";
+            const playerNumber = currentPlayer === "X" ? "1" : "2";
+            document.getElementById("player-turn").innerText = `Player ${playerNumber}'s Turn`;
+        }
+    }
+
+    // Check if there's a winner
+    function checkWinner() {
+        const winningCombos = generateWinningCombinations(boardSize);
+
+        for (let combo of winningCombos) {
+            // For 3x3, we need 3 in a row, for 5x5 we need at least 4 in a row
+            const requiredCount = boardSize === 3 ? 3 : 4;
+
+            // Check for required consecutive matches
+            for (let i = 0; i <= combo.length - requiredCount; i++) {
+                const subCombo = combo.slice(i, i + requiredCount);
+                const allMatch = subCombo.every(index => board[index] === currentPlayer && board[index] !== "");
+
+                if (allMatch) {
+                    winningCells = subCombo; // Store the winning cells
+                    highlightWinner(subCombo);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    // Highlight the winning cells
+    function highlightWinner(combo) {
+        for (let index of combo) {
+            document.querySelector(`.cell[data-index="${index}"]`).classList.add("win");
+        }
+    }
+
+    // Show winner popup
+    function showWinner(winner) {
+        const playerNumber = winner === "X" ? "1" : "2";
+        document.getElementById("winner-message").innerText = `Congratulations !! Player ${playerNumber} wins!`;
+        document.getElementById("winner-popup").style.display = "flex";
+
+        // Call game over in Android native code for sound
+        if (isAndroid) {
+            Android.gameOver();
+        }
+    }
+
+    // Show draw popup
+    function showDraw() {
+        document.getElementById("winner-message").innerText = "It's a tie!";
+        document.getElementById("winner-popup").style.display = "flex";
+
+        // Call game over in Android native code for sound
+        if (isAndroid) {
+            Android.gameOver();
+        }
+    }
+
+    // Show how the player won (highlight winning cells) then hide popup after a delay
+    function showGameState() {
+        document.getElementById("winner-popup").style.display = "none";
+
+        // Add a short delay before starting the next game
+        setTimeout(() => {
+            nextGame();
+        }, 5000); // Show the winning state for 5 seconds
+    }
+
+    // Start next game without changing board size
+    function nextGame() {
+        board = new Array(boardSize * boardSize).fill("");
+        gameActive = true;
+        currentPlayer = "X";
+        winningCells = []; // Reset winning cells
+
+        // Update player turn display
+        document.getElementById("player-turn").innerText = `Player 1's Turn`;
+        document.getElementById("winner-popup").style.display = "none";
+
+        const cells = document.querySelectorAll(".cell");
+        cells.forEach(cell => {
+            cell.innerText = "";
+            cell.classList.remove("win");
+        });
+
+        // Restart the background music for the new game
+        if (isAndroid && musicEnabled) {
+            // Stop game over music if it's playing and restart loop music
+            Android.restartGameMusic();
+        }
+    }
+
+    function resetGame() {
+        nextGame();
+    }
+
+    // Initialize music settings when the page loads
+    window.onload = function() {
+        showHomeScreen();
+
+        // Check if we're in Android WebView
+        if (isAndroid) {
+            // Try to get music setting from Android (will be implemented in WebAppInterface)
+            try {
+                musicEnabled = Android.isMusicEnabled();
+                document.getElementById("music-toggle").checked = musicEnabled;
+            } catch(e) {
+                console.log("Could not get music setting from Android:", e);
+            }
+        }
+    };
+</script>
+</body>
+</html>
